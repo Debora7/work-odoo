@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_partial_production_form_view_inherit" model="ir.ui.view">
+                <field name="name">mrp.partial.production.form.inherit</field>
+                <field name="model">mrp.production</field>
+                <field name="inherit_id" ref="mrp.mrp_production_form_view"></field>
+                <field name="arch" type="xml">
+                    <xpath expr="//button[@name='button_mark_done'][1]" position="before">
+                        <button 
+                            name="button_mark_partial_production" 
+                            invisible="not move_raw_ids or not show_produce"
+                            type="object"
+                            string="Produce Partially" 
+                            class="oe_highlight"/>
+                    </xpath>
+                </field>
+    </record>
+</odoo>
