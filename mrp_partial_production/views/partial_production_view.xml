@@ -13,6 +13,10 @@
                             string="Produce Partially" 
                             class="oe_highlight"/>
                     </xpath>
+
+                    <xpath expr="//div[@name='qty']" position="after">
+                       <field name="produced_qty" readonly="True" />
+                    </xpath>
                 </field>
     </record>
 </odoo>

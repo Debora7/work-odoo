@@ -3,6 +3,6 @@
     'version': '19.0.0.0',
     'depends': ['mrp'],
     'data': [
-        'views/button_partial_production.xml'
+        'views/partial_production_view.xml'
     ]
 }
