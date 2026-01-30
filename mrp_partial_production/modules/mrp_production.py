@@ -10,6 +10,20 @@ class MrpProduction(models.Model):
     produced_qty = fields.Integer()
 
     def button_mark_partial_production(self):
+        if not self.env.context.get('skip_warrning'):
+            if self.qty_producing > self.produced_qty or (self.qty_producing + self.produced_qty) > self.produced_qty:
+                return {
+                    'name': 'Warning',
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'partial.production.warning',
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {
+                        'default_message': 'You will produce more than planned. Is this intended?',
+                        'active_id': self.id,
+                    }
+                }
+            
         self._post_inventory(cancel_backorder=False)
         produced_qty = self.produced_qty + self.qty_producing
 

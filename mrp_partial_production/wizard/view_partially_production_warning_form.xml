@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partial_production_warning_form" model="ir.ui.view">
+        <field name="name">partial.production.warrning.form</field>
+        <field name="model">partial.production.warning</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="message"></field>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object"></button>
+                    <button string="Renunta" special="cancel"></button>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
