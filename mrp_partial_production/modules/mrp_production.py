@@ -10,6 +10,11 @@ class MrpProduction(models.Model):
     produced_qty = fields.Integer()
 
     def button_mark_partial_production(self):
+        """
+            self.product_qty -> Total quantity to produce to finish the MO
+            self.qty_producing -> Quantity that you produce now (can be less, equal or more than product_qty)
+            self.produced_qty -> Quantity already produced through a partial production
+        """
         if not self.env.context.get('skip_warning'):
             if self.qty_producing > self.product_qty or (self.qty_producing + self.produced_qty) > self.product_qty:
                 return {
