@@ -10,8 +10,8 @@ class MrpProduction(models.Model):
     produced_qty = fields.Integer()
 
     def button_mark_partial_production(self):
-        if not self.env.context.get('skip_warrning'):
-            if self.qty_producing > self.produced_qty or (self.qty_producing + self.produced_qty) > self.produced_qty:
+        if not self.env.context.get('skip_warning'):
+            if self.qty_producing > self.product_qty or (self.qty_producing + self.produced_qty) > self.product_qty:
                 return {
                     'name': 'Warning',
                     'type': 'ir.actions.act_window',

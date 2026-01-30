@@ -9,4 +9,4 @@ class PartialProductionWarning(models.Model):
         active_id = self.env.context.get('active_id')
         production = self.env["mrp.production"].browse(active_id)
 
-        return production.with_context(skip_warrning=True).button_mark_partial_production()
+        return production.with_context(skip_warning=True).button_mark_partial_production()

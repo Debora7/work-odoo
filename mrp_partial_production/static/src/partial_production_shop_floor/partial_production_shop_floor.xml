@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-inherit="mrp_workorder.MrpDisplayProductionFooter" t-inherit-mode="extension">
+        <xpath expr="//button/t" position="after">
+            <button class="oe_highlight" t-on-click="produce_without_backorder"><t>Produce</t></button>
+        </xpath>
+    </t>
+</templates>
