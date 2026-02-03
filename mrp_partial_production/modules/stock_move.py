@@ -7,9 +7,9 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     def _set_quantity_done(self, qty):
+        _logger.info('_set_quantity_done called')
         if self.env.context.get('skip_qty_calculation'):
-            new_quant = 2
-            
+            _logger.info(f"self.env.context.get('skip_qty_calculation'): {self.env.context.get('skip_qty_calculation')}")
             return super(StockMove, self)._set_quantity_done(self.env.context.get('quantity_right'))
         
         return super(StockMove, self)._set_quantity_done(qty)

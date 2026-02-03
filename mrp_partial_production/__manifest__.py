@@ -1,7 +1,7 @@
 {
     'name': 'Manufacturing Partial Production',
     'version': '19.0.0.0',
-    'depends': ['mrp'],
+    'depends': ['mrp', 'stock'],
     'data': [
         'security/ir.model.access.csv',
         'views/partial_production_view.xml',
