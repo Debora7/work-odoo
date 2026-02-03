@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 import logging
 
 _logger = logging.getLogger('__name__')
@@ -41,3 +41,14 @@ class MrpProduction(models.Model):
             'produced_qty': produced_qty,
             'qty_producing': 0
         })
+
+    @api.onchange('qty_producing')
+    def _onchange_qty_producing(self):
+        quantity_right = self.qty_producing
+        
+        return super(MrpProduction, self.with_context(
+            skip_qty_calculation=True, 
+            quantity_right=quantity_right
+        ))._onchange_qty_producing()
+        
+    
