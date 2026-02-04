@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 import logging
 
-_logger = logging.getLogger('__name__')
+_logger = logging.getLogger(__name__)
 
 class MrpProduction(models.Model):
     _inherit='mrp.production'
@@ -14,6 +14,8 @@ class MrpProduction(models.Model):
             self.qty_producing -> Quantity that you produce now (can be less, equal or more than product_qty)
             self.produced_qty -> Quantity already produced through a partial production
         """
+        _logger.info('functiabutton_mark_partial_production apelata')
+
         if not self.env.context.get('skip_warning'):
             if self.qty_producing > self.product_qty or (self.qty_producing + self.produced_qty) > self.product_qty:
                 return {
@@ -28,7 +30,9 @@ class MrpProduction(models.Model):
                     }
                 }
             
-        self._post_inventory(cancel_backorder=False)
+        # self._post_inventory(cancel_backorder=False)
+        move_quantity = self.product_uom_id.round(self.qty_producing, rounding_method='HALF-UP')
+        self.with_context(skip_qty_calculation_finished=move_quantity)._post_inventory(cancel_backorder=False)
         produced_qty = self.produced_qty + self.qty_producing
 
         if(produced_qty == self.product_qty):
@@ -43,40 +47,4 @@ class MrpProduction(models.Model):
 
     @api.onchange('qty_producing')
     def _onchange_qty_producing(self):
-        self.with_context(skip_qty_calculation=True)._change_producing()
-
-    def _set_qty_producing(self, pick_manual_consumption_moves=True):
-        if self.product_id.tracking == 'serial':
-            qty_producing_uom = self.product_uom_id._compute_quantity(self.qty_producing, self.product_id.uom_id, rounding_method='HALF-UP')
-            qty_production_uom = self.product_uom_id._compute_quantity(self.product_qty, self.product_id.uom_id, rounding_method='HALF-UP')
-            # allow changing a non-zero value to a 0 to not block mass produce feature
-            if qty_producing_uom != qty_production_uom and not (qty_producing_uom == 0 and self._origin.qty_producing != self.qty_producing):
-                self.qty_producing = self.product_id.uom_id._compute_quantity(len(self.lot_producing_ids), self.product_uom_id, rounding_method='HALF-UP')
-
-        # waiting for a preproduction move before assignement
-        is_waiting = self.warehouse_id.manufacture_steps != 'mrp_one_step' and self.picking_ids.filtered(lambda p: p.picking_type_id == self.warehouse_id.pbm_type_id and p.state not in ('done', 'cancel'))
-
-        for move in (
-            self.move_raw_ids.filtered(lambda m: not is_waiting or m.product_id.tracking == 'none')
-            | self.move_finished_ids.filtered(lambda m: m.product_id != self.product_id or m.product_id.tracking == 'serial')
-        ):
-            is_byproduct = move in self.move_byproduct_ids
-            # Never update already produced by-product moves.
-            if move.picked and (is_byproduct or move.manual_consumption):
-                continue
-
-            # sudo needed for portal users
-            if move.sudo()._should_bypass_set_qty_producing():
-                continue
-
-            if self.env.context.get('skip_qty_calculation'):
-                new_qty = move.product_uom.round((self.qty_producing) * move.unit_factor)
-            else:
-                new_qty = move.product_uom.round((self.qty_producing - self.qty_produced) * move.unit_factor)
-
-            move._set_quantity_done(new_qty)
-            if (not move.manual_consumption or pick_manual_consumption_moves) \
-                    and move.quantity \
-                    and not is_byproduct \
-                    and (move.raw_material_production_id or move.product_id.tracking != 'serial'):
-                move.picked = True
+        return super(MrpProduction, self.with_context(skip_qty_calculation=True ))._onchange_qty_producing()

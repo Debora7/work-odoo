@@ -4,7 +4,7 @@ import { MrpDisplayRecord } from "@mrp_workorder/mrp_display/mrp_display_record"
 
 patch(MrpDisplayRecord.prototype, {
     async produce_without_backorder() {
-
+        console.log('Func JS apelata')
         await this.model.orm.call(
             "mrp.production",
             "button_mark_partial_production",
