@@ -14,7 +14,7 @@ class MrpProduction(models.Model):
             self.qty_producing -> Quantity that you produce now (can be less, equal or more than product_qty)
             self.produced_qty -> Quantity already produced through a partial production
         """
-        _logger.info('functiabutton_mark_partial_production apelata')
+        _logger.info('functia button_mark_partial_production apelata')
 
         if not self.env.context.get('skip_warning'):
             if self.qty_producing > self.product_qty or (self.qty_producing + self.produced_qty) > self.product_qty:
@@ -29,10 +29,10 @@ class MrpProduction(models.Model):
                         'active_id': self.id,
                     }
                 }
-            
-        # self._post_inventory(cancel_backorder=False)
-        move_quantity = self.product_uom_id.round(self.qty_producing, rounding_method='HALF-UP')
-        self.with_context(skip_qty_calculation_finished=move_quantity)._post_inventory(cancel_backorder=False)
+
+        self._post_inventory(cancel_backorder=False)
+        # move_quantity = self.product_uom_id.round(self.qty_producing, rounding_method='HALF-UP')
+        # self.with_context(skip_qty_calculation_finished=move_quantity)._post_inventory(cancel_backorder=False)
         produced_qty = self.produced_qty + self.qty_producing
 
         if(produced_qty == self.product_qty):
@@ -47,4 +47,5 @@ class MrpProduction(models.Model):
 
     @api.onchange('qty_producing')
     def _onchange_qty_producing(self):
-        return super(MrpProduction, self.with_context(skip_qty_calculation=True ))._onchange_qty_producing()
+        _logger.info('a ajuns aici')
+        super(MrpProduction, self.with_context(skip_qty_calculation=True ))._onchange_qty_producing()
