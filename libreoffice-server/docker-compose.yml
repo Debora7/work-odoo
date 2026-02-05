@@ -1,0 +1,7 @@
+services:
+  lo_converter_service:
+    build: .
+    container_name: lo_converter_service
+    ports:
+      - "8084:8084"
+    restart: unless-stopped
