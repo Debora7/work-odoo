@@ -30,22 +30,21 @@ class MrpProduction(models.Model):
                     }
                 }
 
-        self._post_inventory(cancel_backorder=False)
-        # move_quantity = self.product_uom_id.round(self.qty_producing, rounding_method='HALF-UP')
-        # self.with_context(skip_qty_calculation_finished=move_quantity)._post_inventory(cancel_backorder=False)
+        move_quantity = self.product_uom_id.round(self.qty_producing, rounding_method='HALF-UP')
+        self.with_context(skip_qty_calculation_finished=move_quantity)._post_inventory(cancel_backorder=False)
+
         produced_qty = self.produced_qty + self.qty_producing
 
-        if(produced_qty == self.product_qty):
-            self.write({
-                'state': 'done', # TODO nu setam done din db 
-            })
-        
         self.write({
             'produced_qty': produced_qty,
             'qty_producing': 0
         })
 
+        # TODO -> nu setam done din db
+        if produced_qty == self.product_qty:
+            return True 
+        
+
     @api.onchange('qty_producing')
     def _onchange_qty_producing(self):
-        _logger.info('a ajuns aici')
         super(MrpProduction, self.with_context(skip_qty_calculation=True ))._onchange_qty_producing()
