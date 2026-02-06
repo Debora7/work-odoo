@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 import logging
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -33,6 +34,12 @@ class MrpProduction(models.Model):
 
         produced_qty = self.produced_qty + self.qty_producing
 
+        moves = self.env['stock.move'].search([('production_id', '=', self.id)])
+        moves_to_finish = moves.filtered(lambda x: x.state not in ('done', 'cancel'))
+
+        if moves_to_finish:
+            moves_to_finish._action_done()
+
         if produced_qty == self.product_qty:
             return self.with_context(last_partial_production=True, skip_backorder=True, skip_qty_calculation_finished=move_quantity).button_mark_done()
 
@@ -49,4 +56,5 @@ class MrpProduction(models.Model):
     def _post_inventory(self, cancel_backorder):
         if self.env.context.get('last_partial_production'):
             return True
-        return super(MrpProduction, self.with_context(cheia_mea=True))._post_inventory(cancel_backorder=cancel_backorder)
+        
+        return super(MrpProduction, self)._post_inventory(cancel_backorder=cancel_backorder)
