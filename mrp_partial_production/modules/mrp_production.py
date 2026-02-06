@@ -34,7 +34,7 @@ class MrpProduction(models.Model):
         produced_qty = self.produced_qty + self.qty_producing
 
         if produced_qty == self.product_qty:
-            return self.with_context(last_partial_production=True, skip_backorder=True).button_mark_done()
+            return self.with_context(last_partial_production=True, skip_backorder=True, skip_qty_calculation_finished=move_quantity).button_mark_done()
 
         self.write({
             'produced_qty': produced_qty,
@@ -49,4 +49,4 @@ class MrpProduction(models.Model):
     def _post_inventory(self, cancel_backorder):
         if self.env.context.get('last_partial_production'):
             return True
-        return super()._post_inventory(cancel_backorder=cancel_backorder)
+        return super(MrpProduction, self.with_context(cheia_mea=True))._post_inventory(cancel_backorder=cancel_backorder)
