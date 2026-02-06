@@ -14,8 +14,6 @@ class MrpProduction(models.Model):
             self.qty_producing -> Quantity that you produce now (can be less, equal or more than product_qty)
             self.produced_qty -> Quantity already produced through a partial production
         """
-        _logger.info('functia button_mark_partial_production apelata')
-
         if not self.env.context.get('skip_warning'):
             if self.qty_producing > self.product_qty or (self.qty_producing + self.produced_qty) > self.product_qty:
                 return {
@@ -36,7 +34,7 @@ class MrpProduction(models.Model):
         produced_qty = self.produced_qty + self.qty_producing
 
         if produced_qty == self.product_qty:
-            self.with_context(last_partial_production=True).button_mark_done()
+            return self.with_context(last_partial_production=True, skip_backorder=True).button_mark_done()
 
         self.write({
             'produced_qty': produced_qty,
