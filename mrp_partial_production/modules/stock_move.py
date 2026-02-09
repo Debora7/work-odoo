@@ -7,6 +7,9 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     def _set_quantity_done(self, qty):
+        _logger.info('_set_quantity_done trigger')
+        _logger.info(f'context { self.env.context.get('skip_qty_calculation')}')
+
         if self.env.context.get('skip_qty_calculation'):
             production = self.raw_material_production_id or self.production_id
             if production:

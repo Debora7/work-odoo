@@ -15,7 +15,7 @@ class MrpProduction(models.Model):
             self.qty_producing -> Quantity that you produce now (can be less, equal or more than product_qty)
             self.produced_qty -> Quantity already produced through a partial production
         """
-        
+
         if not self.env.context.get('skip_warning'):
             if self.qty_producing > self.product_qty or (self.qty_producing + self.produced_qty) > self.product_qty:
                 return {
@@ -52,6 +52,7 @@ class MrpProduction(models.Model):
 
     @api.onchange('qty_producing')
     def _onchange_qty_producing(self):
+        _logger.info('_onchange_qty_producing trigger')
         super(MrpProduction, self.with_context(skip_qty_calculation=True ))._onchange_qty_producing()
 
     def _post_inventory(self, cancel_backorder):
