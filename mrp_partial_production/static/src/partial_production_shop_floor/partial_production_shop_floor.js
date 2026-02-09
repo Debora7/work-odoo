@@ -19,6 +19,9 @@ patch(MrpRegisterProductionDialog.prototype, {
                 "mrp.production", 
                 "button_mark_partial_production", 
                 [record.resId],
+                {
+                    context: {...record.context, 'from_shop_floor': true}
+                }
             );
 
             await record.load(); 
