@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-inherit="mrp_workorder.MrpDisplayProductionFooter" t-inherit-mode="extension">
-        <xpath expr="//button" position="after">
-            <button t-attf-class="btn #{_btn_type} ms-2" t-on-click="produce_without_backorder">
-                <t>Produce partially</t>
-            </button>
+    <t t-inherit="mrp_workorder.MrpRegisterProductionDialog" t-inherit-mode="extension">
+        <xpath expr="//button[contains(@t-on-click, 'validate')]" position="after">
+            <button class="btn btn-secondary" t-on-click="produce_without_backorder">Produce partially</button>
         </xpath>
     </t>
 </templates>

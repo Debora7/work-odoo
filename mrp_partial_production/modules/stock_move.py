@@ -15,7 +15,13 @@ class StockMove(models.Model):
         return super(StockMove, self)._set_quantity_done(qty)
     
     def write(self, vals):
-        if self.env.context.get('skip_qty_calculation_finished') and vals.get('quantity'):
-            vals['quantity'] = self.env.context.get('skip_qty_calculation_finished')
-
+        _logger.info(f"Context skip_qty: {self.env.context.get('skip_qty_calculation_finished')}")
+        skip_qty = self.env.context.get('skip_qty_calculation_finished')
+        
+        if skip_qty:
+            for move in self:
+                if move.production_id:
+                    _logger.info(f"Setting quantity for finished product: {move.product_id.display_name}")
+                    vals['quantity'] = skip_qty
+                    
         return super().write(vals)
