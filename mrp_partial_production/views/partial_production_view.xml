@@ -17,6 +17,10 @@
                     <xpath expr="//div[@name='qty']" position="after">
                        <field name="produced_qty" readonly="True" />
                     </xpath>
+
+                        <xpath expr="//button[@name='button_mark_done']" position="attributes">
+                            <attribute name="invisible">not move_raw_ids or not show_produce or produced_qty &gt; 0</attribute>
+                        </xpath>
                 </field>
     </record>
 </odoo>
