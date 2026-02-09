@@ -15,12 +15,7 @@ class MrpProduction(models.Model):
             self.qty_producing -> Quantity that you produce now (can be less, equal or more than product_qty)
             self.produced_qty -> Quantity already produced through a partial production
         """
-        _logger.info('button_mark_partial_production called')
-        _logger.info(f'self.qty_producing  {self.qty_producing}')
-        _logger.info(f'self.produced_qty {self.produced_qty}')
-        _logger.info(f'self.product_qty {self.product_qty}')
-        _logger.info(f'skip_qty_calculation {self.env.context.get('skip_qty_calculation')}')
-
+        
         if not self.env.context.get('skip_warning'):
             if self.qty_producing > self.product_qty or (self.qty_producing + self.produced_qty) > self.product_qty:
                 return {
@@ -36,16 +31,7 @@ class MrpProduction(models.Model):
                 }
             
         move_quantity = self.product_uom_id.round(self.qty_producing, rounding_method='HALF-UP')
-        _logger.info(f'move_quantity {move_quantity}')
         self.with_context(skip_qty_calculation_finished=move_quantity)._post_inventory(cancel_backorder=False)
-
-        # if self.env.context.get('from_shop_floor'):
-        #     _logger.info('button_mark_partial_production called')
-        #     _logger.info(f'self.qty_producing  {self.qty_producing}')
-        #     _logger.info(f'self.produced_qty {self.produced_qty}')
-        #     _logger.info(f'self.product_qty {self.product_qty}')
-
-        #     self.with_context(skip_qty_calculation_finished=move_quantity)._post_inventory(cancel_backorder=False)
 
         produced_qty = self.produced_qty + self.qty_producing
 

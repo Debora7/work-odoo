@@ -20,7 +20,7 @@ patch(MrpRegisterProductionDialog.prototype, {
                 "button_mark_partial_production", 
                 [record.resId],
                 {
-                    context: { ...record.context, 'from_shop_floor': true, 'skip_qty_calculation': true  }
+                    context: { ...record.context, 'from_shop_floor': true }
                 }
             );
 
