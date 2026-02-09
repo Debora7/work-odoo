@@ -13,22 +13,20 @@ patch(MrpRegisterProductionDialog.prototype, {
             const resModel = this.props.workorderId ? "mrp.workorder" : "mrp.production";
             const resId = [this.props.workorderId || record.resId];
             
-            // Sincronizăm cantitățile înainte de acțiune
             await record.model.orm.call(resModel, "set_qty_producing", [resId]);
 
-            // Executăm producția parțială
             await record.model.orm.call(
                 "mrp.production", 
                 "button_mark_partial_production", 
-                [record.resId]
+                [record.resId],
+                {
+                    context: { ...record.context, 'from_shop_floor': true, 'skip_qty_calculation': true  }
+                }
             );
 
-            // --- REFRESH CRITIC ---
-            // Reîncărcăm datele recordului direct de pe server înainte de orice altceva
             await record.load(); 
 
             if (this.props.reload) {
-                // Notificăm componenta părinte (Shop Floor) să își facă update-ul global
                 await this.props.reload(record);
             }
             
