@@ -12,11 +12,15 @@ import shutil
 from urllib.request import pathname2url
 from com.sun.star.beans import PropertyValue
 
+import atexit
+import logging
+
 url_map = Map([
     Rule('/convert-word-to-pdf', endpoint='convert_word_to_pdf', methods=['POST']),
     Rule('/xls-formulas-to-data', endpoint='xls_formula_to_data', methods=['POST']),
 ])
 
+@atexit.register
 def application(environ, start_response):
     request = Request(environ)
 
@@ -25,6 +29,7 @@ def application(environ, start_response):
     try:
         endpoint, args = urls.match()
     except Exception as e:
+        logging.info(e)
         start_response('404 NOT FOUND', [('Content-Type', 'text/plain')])
         return [str(e).encode('utf-8')]
 
@@ -122,6 +127,7 @@ def xls_formula_to_data(request: Request):
         return ('200 OK', [('Content-Type', 'application/vnd.ms-excel')], str({'response' : calculated_bytes}).encode())
 
     except Exception as e:
+        logging.info(e)
         return ('500 INTERNAL SERVER ERROR', [('Content-Type', 'text/plain')], str(e).encode('utf-8'))
 
 def recalc_xls(file_bytes):
