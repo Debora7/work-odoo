@@ -45,7 +45,6 @@
                         <group>
                             <group string="Template">
                                 <field name="template_contract_id"/>
-                                <button string="Populate" type="object" invisible="template_contract_id == False" name="populate_with_data" class="btn btn-primary"/>
                             </group>
                             <group/>
                         </group>
@@ -53,7 +52,13 @@
                         <notebook>
                             <page name="elements_page" string="Articles">
                                 <separator string="Articles" colspan="4" />
-                                <field name="elemente_ids" nolabel='1'/>
+                                <field name="visible_elements_ids" nolabel='1' readonly="1">
+                                    <list>
+                                        <field name='name' />
+                                        <field name='numar' />
+                                        <field name='tip' />
+                                    </list>
+                                </field>
                                 <p class="oe_grey oe_edit_only">
                                     <strong>Variabile disponibile:</strong><br/>
                                     • <code>$\{contract.field\}</code> sau <code>$\{contract.object\}.method()</code> — câmpuri/metode globale ale contractului<br/>
