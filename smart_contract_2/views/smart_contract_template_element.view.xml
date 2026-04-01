@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="contract_template_element_form" model="ir.ui.view">
+        <field name="name">smart.contract.template.element.form</field>
+        <field name="model">smart.contract.template.element</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="numar" />
+                        </group>
+                        <group>
+                            <field name="tip" />
+                            <field name="template_id" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Content">
+                            <field name="text"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

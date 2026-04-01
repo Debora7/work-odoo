@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="smart_contract_action" model="ir.actions.act_window">
+        <field name="name">Contracte</field>
+        <field name="res_model">smart.contract</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="smart_contract_root_menu_action" name="Contracte" web_icon="smart_contract,static/description/icon.png"/>
+
+    <menuitem id="smart_contract_menu_action" action="smart_contract_action" parent='smart_contract_root_menu_action'/>
+
+    <record id="smart_contract_template_action" model="ir.actions.act_window">
+        <field name="name">Template contracte</field>
+        <field name="res_model">smart.contract.template</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="smart_contract_template_menu_action" action="smart_contract_template_action" parent='smart_contract_root_menu_action'/>
+</odoo>
