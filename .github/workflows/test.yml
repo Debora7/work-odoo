@@ -1,0 +1,103 @@
+name: Odoo Unit Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.find.outputs.modules }}
+      odoo_version: ${{ steps.version.outputs.odoo_version }}
+      has_tests: ${{ steps.find.outputs.has_tests }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Citește versiunea Odoo
+        id: version
+        run: |
+          if [ -f .odoo-version ]; then
+            VERSION=$(cat .odoo-version | tr -d '[:space:]')
+          else
+            echo "⚠️  Lipsește .odoo-version — folosesc 17.0 ca fallback"
+            VERSION="17.0"
+          fi
+          echo "odoo_version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Versiune detectată: $VERSION"
+
+      - name: Descoperă modulele cu teste
+        id: find
+        run: |
+          MODULES=$(
+            find . -name "__manifest__.py" \
+              -not -path "*/.git/*" \
+            | while read manifest; do
+                module_dir=$(dirname "$manifest")
+                if find "$module_dir/tests" -name "test_*.py" 2>/dev/null | grep -q .; then
+                  basename "$module_dir"
+                fi
+              done \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))'
+          )
+
+          if [ "$MODULES" = "[]" ] || [ -z "$MODULES" ]; then
+            echo "has_tests=false" >> $GITHUB_OUTPUT
+            echo "modules=[]" >> $GITHUB_OUTPUT
+            echo "ℹ️  Niciun modul cu teste găsit."
+          else
+            echo "has_tests=true" >> $GITHUB_OUTPUT
+            echo "modules=$MODULES" >> $GITHUB_OUTPUT
+            echo "Module cu teste: $MODULES"
+          fi
+
+  test:
+    needs: discover
+    if: needs.discover.outputs.has_tests == 'true'
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        module: ${{ fromJson(needs.discover.outputs.modules) }}
+      fail-fast: false  # rulează toate modulele chiar dacă unul pică
+
+    services:
+      db:
+        image: postgres:15
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+          POSTGRES_DB: odoo_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rulează teste pentru ${{ matrix.module }}
+        run: |
+          docker run --rm \
+            --network host \
+            -v ${{ github.workspace }}:/mnt/extra-addons \
+            -e HOST=localhost \
+            -e USER=odoo \
+            -e PASSWORD=odoo \
+            odoo:${{ needs.discover.outputs.odoo_version }} \
+            odoo \
+              -d odoo_test \
+              --addons-path=/mnt/extra-addons \
+              --test-enable \
+              --stop-after-init \
+              -u ${{ matrix.module }} \
+              --log-level=test
+
+  skip:
+    needs: discover
+    if: needs.discover.outputs.has_tests == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "ℹ️  Niciun test găsit în repo — skip."
